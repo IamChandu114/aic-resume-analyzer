@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Login | Resume Analyzer</title>
+  <link href="https://cdn.tailwindcss.com" rel="stylesheet">
+</head>
+<body class="bg-gray-100 flex items-center justify-center min-h-screen">
+
+  <form method="POST" class="bg-white p-8 rounded-xl shadow-lg w-96">
+    <h2 class="text-2xl font-bold mb-6 text-center">Login</h2>
+
+    <input type="email" name="email" placeholder="Email" required
+      class="w-full p-3 border rounded mb-4">
+
+    <input type="password" name="password" placeholder="Password" required
+      class="w-full p-3 border rounded mb-4">
+
+    <button class="w-full bg-green-600 text-white p-3 rounded hover:bg-green-700">
+      Login
+    </button>
+
+    <p class="text-center mt-4 text-sm">
+      New user?
+      <a href="/signup" class="text-green-600 font-semibold">Create account</a>
+    </p>
+  </form>
+
+</body>
+</html>
