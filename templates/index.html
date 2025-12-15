@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>AI Resume Analyzer & Job Matcher</title>
+
+  <!-- Tailwind CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body { font-family: 'Poppins', sans-serif; }
+  </style>
+</head>
+
+<body class="bg-gradient-to-br from-slate-900 via-gray-900 to-black text-white min-h-screen">
+
+  <!-- HERO -->
+  <section class="text-center py-14">
+    <h1 class="text-4xl font-bold mb-4">
+      AI-Powered Resume Analyzer & Job Matcher
+    </h1>
+    <p class="text-gray-400 max-w-xl mx-auto">
+      Upload your resume. Paste the job description.
+      Let AI tell you exactly how close you are to getting hired.
+    </p>
+  </section>
+
+  <!-- MAIN CARD -->
+  <div class="max-w-4xl mx-auto bg-white/5 backdrop-blur-xl rounded-2xl shadow-xl p-10">
+
+    <!-- FORM -->
+    <form method="POST" action="/" enctype="multipart/form-data">
+
+      <!-- Resume Upload -->
+      <div class="mb-6">
+        <label class="block mb-2 text-sm text-gray-300">Upload Resume (PDF)</label>
+        <input type="file" name="resume" accept=".pdf" required
+          class="w-full bg-black/30 border border-gray-700 rounded-lg p-3 text-white">
+      </div>
+
+      <!-- Job Description -->
+      <div class="mb-6">
+        <label class="block mb-2 text-sm text-gray-300">Paste Job Description</label>
+        <textarea name="jd" rows="6" required
+          class="w-full bg-black/30 border border-gray-700 rounded-lg p-3 text-white"></textarea>
+      </div>
+
+      <!-- Submit Button -->
+      <button type="submit"
+        class="w-full py-3 rounded-lg bg-gradient-to-r from-emerald-400 to-green-600 font-semibold text-black hover:scale-105 transition">
+        Analyze Resume
+      </button>
+    </form>
+
+    <!-- ERROR MESSAGE -->
+    {% if error %}
+    <div class="mt-6 bg-red-500/20 border border-red-500 text-red-300 p-4 rounded-lg">
+      ❌ {{ error }}
+    </div>
+    {% endif %}
+
+    <!-- RESULTS -->
+    {% if result %}
+    <div class="mt-10 border-t border-gray-700 pt-8">
+
+      <!-- Match Score -->
+      <h2 class="text-2xl font-semibold mb-4">Match Score</h2>
+      <div class="w-full bg-gray-700 rounded-full h-4 mb-4">
+        <div class="bg-green-400 h-4 rounded-full"
+             style="width: {{ result.score }}%"></div>
+      </div>
+      <p class="text-xl font-bold mb-6">{{ result.score }}%</p>
+
+      <!-- Missing Skills -->
+      <h3 class="text-xl font-semibold mb-2">Missing Skills</h3>
+      <div class="flex flex-wrap gap-2 mb-6">
+        {% for skill in result.missing_skills %}
+          <span class="px-3 py-1 bg-red-500/20 text-red-400 rounded-full text-sm">
+            {{ skill }}
+          </span>
+        {% endfor %}
+      </div>
+
+      <!-- AI Feedback -->
+      <h3 class="text-xl font-semibold mb-2">AI Feedback</h3>
+      <p class="text-gray-300 leading-relaxed">
+        {{ result.explanation }}
+      </p>
+
+    </div>
+    {% endif %}
+
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="text-center text-gray-500 mt-14 pb-6 text-sm">
+    Made By Chandu Vemula · 
+  </footer>
+
+</body>
+</html>
+
