@@ -2,3 +2,5 @@ Flask
 gunicorn
 pdfplumber
 PyPDF2
+Flask-Login
+Flask-SQLAlchemy
