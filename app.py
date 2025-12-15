@@ -1,9 +1,17 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for
-from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+from flask_login import (
+    LoginManager,
+    login_user,
+    login_required,
+    logout_user,
+    current_user
+)
 from werkzeug.security import generate_password_hash, check_password_hash
 
-# ===== YOUR EXISTING IMPORTS =====
+# =========================
+# 🧠 CORE PROJECT IMPORTS
+# =========================
 from resume_parser import parse_resume
 from jd_analyzer import parse_job_description
 from match_engine import (
@@ -13,10 +21,14 @@ from match_engine import (
 )
 from explanation_engine import generate_explanation
 
-# ===== DATABASE IMPORT =====
+# =========================
+# 🗄️ DATABASE IMPORTS
+# =========================
 from models import db, User
 
-# ===== APP CONFIG =====
+# =========================
+# ⚙️ APP CONFIG
+# =========================
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 app = Flask(
@@ -25,15 +37,19 @@ app = Flask(
     static_folder="static"
 )
 
-app.secret_key = "super-secret-key"  # change later
+app.secret_key = os.environ.get("SECRET_KEY", "super-secret-key")
 
-# ===== DATABASE CONFIG =====
+# =========================
+# 🗄️ DATABASE CONFIG
+# =========================
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///users.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db.init_app(app)
 
-# ===== LOGIN MANAGER =====
+# =========================
+# 🔐 LOGIN MANAGER
+# =========================
 login_manager = LoginManager()
 login_manager.login_view = "login"
 login_manager.init_app(app)
@@ -42,26 +58,36 @@ login_manager.init_app(app)
 def load_user(user_id):
     return User.query.get(int(user_id))
 
-# ===== CREATE DB =====
+# =========================
+# 🏗️ CREATE DATABASE
+# =========================
 with app.app_context():
     db.create_all()
 
 # =========================
 # 🔐 AUTH ROUTES
 # =========================
-
 @app.route("/signup", methods=["GET", "POST"])
 def signup():
     if request.method == "POST":
+        email = request.form["email"]
+
+        # Prevent duplicate accounts
+        if User.query.filter_by(email=email).first():
+            return render_template("signup.html", error="Email already exists")
+
         hashed_pw = generate_password_hash(request.form["password"])
+
         user = User(
             name=request.form["name"],
-            email=request.form["email"],
+            email=email,
             password=hashed_pw,
             role="user"
         )
+
         db.session.add(user)
         db.session.commit()
+
         return redirect(url_for("login"))
 
     return render_template("signup.html")
@@ -71,9 +97,12 @@ def signup():
 def login():
     if request.method == "POST":
         user = User.query.filter_by(email=request.form["email"]).first()
+
         if user and check_password_hash(user.password, request.form["password"]):
             login_user(user)
             return redirect(url_for("dashboard"))
+
+        return render_template("login.html", error="Invalid credentials")
 
     return render_template("login.html")
 
@@ -85,22 +114,20 @@ def logout():
     return redirect(url_for("login"))
 
 # =========================
-# 📊 DASHBOARD
+# 📊 DASHBOARD ROUTES
 # =========================
-
 @app.route("/dashboard")
 @login_required
 def dashboard():
     if current_user.role == "recruiter":
         return render_template("dashboard_recruiter.html")
     elif current_user.role == "admin":
-        return "Admin Panel"
+        return render_template("dashboard_admin.html")
     return render_template("dashboard_user.html")
 
 # =========================
-# 🧠 RESUME ANALYZER (YOUR CORE)
+# 🧠 RESUME ANALYZER
 # =========================
-
 @app.route("/", methods=["GET", "POST"])
 def index():
     result = None
@@ -123,7 +150,7 @@ def index():
                 error = "Job description cannot be empty."
                 return render_template("index.html", error=error)
 
-            resume_path = "uploaded_resume.pdf"
+            resume_path = os.path.join(BASE_DIR, "uploaded_resume.pdf")
             resume_file.save(resume_path)
 
             resume_data = parse_resume(resume_path)
@@ -160,15 +187,15 @@ def index():
             }
 
         except Exception as e:
-            error = f"Something went wrong during analysis: {str(e)}"
+            error = f"Something went wrong: {str(e)}"
 
     return render_template("index.html", result=result, error=error)
 
 # =========================
-# 🚀 RUN
+# 🚀 RUN APP
 # =========================
-
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
-    app.run(host="0.0.0.0", port=port, debug=True)
+    app.run(host="0.0.0.0", port=port)
+
 
