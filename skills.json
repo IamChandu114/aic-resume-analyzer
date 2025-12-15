@@ -1,0 +1,10 @@
+{
+  "python": ["python", "py"],
+  "java": ["java"],
+  "javascript": ["javascript", "js"],
+  "machine learning": ["machine learning", "ml"],
+  "deep learning": ["deep learning", "dl"],
+  "sql": ["sql", "mysql", "postgresql"],
+  "data analysis": ["data analysis", "pandas", "numpy"],
+  "web development": ["html", "css", "react", "flask"]
+}
