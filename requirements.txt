@@ -4,3 +4,5 @@ pdfplumber
 PyPDF2
 Flask-Login
 Flask-SQLAlchemy
+openai>=1.30.0
+
