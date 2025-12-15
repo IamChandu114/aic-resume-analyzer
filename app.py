@@ -9,8 +9,7 @@ from match_engine import (
 from explanation_engine import generate_explanation
 
 import os
-
-app = Flask(__name__)
+app = Flask(__name__, template_folder='index.html', static_folder='static')
 
 @app.route("/", methods=["GET", "POST"])
 def index():
